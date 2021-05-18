@@ -1,0 +1,16 @@
+spark-submit
+--master yarn
+--deploy-mode cluster
+--conf spark.yarn.appMasterEnv.PYSPARK_DRIVER_PYTHON=./xxx/bin/python
+--conf spark.yarn.appMasterEnv.PYSPARK_PYTHON=./xxx/bin/python
+--conf  spark.yarn.dist.archives="ZipFile#xxx"
+--jars JAR_File
+--files Yaml_File
+Python_Script.py
+
+
+
+NOTE1: https://stackoverflow.com/questions/36461054/i-cant-seem-to-get-py-files-on-spark-to-work/39779271#39779271
+Note2: https://github.com/massmutual/sample-pyspark-application/blob/master/setup-and-submit.sh
+
+
