@@ -1,0 +1,30 @@
+https://community.cloudera.com/t5/Support-Questions/Hive-Multiple-Small-Files/td-p/204038
+
+Hive Multiple Small Files :
+****************************
+
+To control the no of files inserted in hive tables we can either change the no of mapper/reducers to 1 depending on the need, so that the final output file will always be one. If not anyone of the below things should be enable to merge a reducer output if the size is less than an block size.
+
+1.	hive.merge.mapfiles -- Merge small files at the end of a map-only job.
+2.	hive.merge.mapredfiles -- Merge small files at the end of a map-reduce job.
+3.	hive.merge.size.per.task -- Size of merged files at the end of the job.
+4.	hive.merge.smallfiles.avgsize -- When the average output file size of a job is less than this number, Hive will start an additional map-reduce job to merge the output files into bigger files. This is only done for map-only jobs if hive.merge.mapfiles is true, and  for map-reduce jobs if hive.merge.mapredfiles is true.
+
+
+Q2:
+Thanks for your response.If I partition the data by yyyy-mm-dd field and I receive only one file per day. I assume , I will always have one file per partition irrespective of this setting?
+If the above assumption is correct(pls correct if that is wrong), will I end up with select queries which runs slower if I store files for say 6 years?
+
+i.e I will have 6 * 365 files each around say 8-9MB in size (which is smaller than the default chunk size).
+I was hoping to consolidate the files on a weekly basis but , I need to have data available to users on a daily basis ..hence I dont think I can do that.
+Let me know the suggestions.
+
+Thanks
+
+Nikkie
+
+
+ANSWER:
+If I partition the data by yyyy-mm-dd field and I receive only one file per day. I assume , I will always have one file per partition irrespective of this setting? --> Its not that simple, because it depends on the size of your input file, block size, size of mapper /reducer an other variables. Considering your input file is less than the block size then it should create only one file.
+
+If you partition the table on a daily basis with less size then in growth of time it will cause performance issues and there is not much to do with partition. What I would say on such condition, is that partition the table on yearly basis with buckets on a frequently used filter column. In your case it can be daily/weekly/yearly basis. But still each file in a bucketed folder will be less if the data size is less.

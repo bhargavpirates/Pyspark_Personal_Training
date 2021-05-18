@@ -1,0 +1,36 @@
+Spark Executors -> Runs on a JVM.One executor per JVM(--num-executors)
+
+Spark Executor Memory (--executor-memory)
+
+Spark Executor Cores (--executor-cores)
+
+We have say 6 Nodes with 16 cores each and 64Gb RM each.
+
+So total cores = 16 * 6 = 96
+
+So total memory = 64 * 6 = 384gb
+
+ApplicationMaster needs one core.
+
+Its better to keep around 4 or 5 cores per executor, this is somewhat ideal for hdfs i/o throughput.
+
+With 5 core per executor, now each node will have 16/5 ~ 3 executor and 63gb/3 ~ 21gb.
+
+So total executor = 3*6 1= 18 ,now give one for AM ,so we will run with around 17 executors and around 20gb executor memory.
+
+
+===================================================================================================================================
+Following list captures some recommendations to keep in mind while configuring them:
+
+Hadoop/Yarn/OS Deamons: 
+					When we run spark application using a cluster manager like Yarn, there’ll be several daemons that’ll run in the background like NameNode, Secondary NameNode, DataNode, JobTracker and TaskTracker. So, while specifying num-executors, we need to make sure that we leave aside enough cores (~1 core per node) for these daemons to run smoothly.
+
+Yarn ApplicationMaster (AM): 
+					ApplicationMaster is responsible for negotiating resources from the ResourceManager and working with the NodeManagers to execute and monitor the containers and their resource consumption. If we are running spark on yarn, then we need to budget in the resources that AM would need (~1024MB and 1 Executor).
+
+HDFS Throughput: 
+					HDFS client has trouble with tons of concurrent threads. It was observed that HDFS achieves full write throughput with ~5 tasks per executor . So it’s good to keep the number of cores per executor below that number.
+
+MemoryOverhead: 
+				Following picture depicts spark-yarn-memory-usage.
+			
